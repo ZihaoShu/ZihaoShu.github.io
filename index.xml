@@ -1,10 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>charlola.mode</title>
+    <title>Blog</title>
     <link>/</link>
-    <description>Recent content on charlola.mode</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <description>Recent content on Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 02 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tax4Fun2使用方法</title>
+      <link>/articles/tax4fun2/</link>
+      <pubDate>Tue, 02 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/articles/tax4fun2/</guid>
+      <description>Tax4Fun2参数详细介绍 Tax4Fun2只需一个依赖：
+BLAST（可以通过buildDependencies()命令安装） 为用到所有的函数，可能需要额外安装一些包
+R包seqinr和ape（可以通过buildDependencies()命令安装）
+功能注释需要用到Diamond（Mac用户需要自己编译）
+在v1.1.5版本中，Tax4Fun2使用vsearch进行序列聚类。
+安装Tax4Fun2，构建默认参考数据和安装所有依赖项 下载及安装Tax4Fun2
+点击这里下载R包或者在终端中运行 wget https://github.com/ZihaoShu/Tax4Fun2/raw/main/Tax4Fun2_1.1.5.tar.gz 安装Tax4Fun2 install.packages(pkgs = &amp;#34;Tax4Fun2_1.1.5.tar.gz&amp;#34;, repos = NULL, source = TRUE) 加载Tax4Fun2 library(Tax4Fun2) 构建默认参考数据库 使用buildReferenceData()命令将下载并构建默认的Tax4Fun2参考数据库，也可以一同安装R包ape和seqinr。此外还会测试路径中是否存在blast。为了确保下载成功，该函数还将使用me5sum自动检查下载数据的一致性。
+选项：
+path_to_working_directory = &amp;quot;.&amp;quot; &amp;gt; Tax4Fun2的安装路径（默认安装在当前工作目录）
+use_force = FALSE &amp;gt; 如果存在则覆盖文件夹（默认为FALSE）
+install_suggested_packages = TRUE &amp;gt; 安装R包ape和seqinr（默认为TRUE）
+buildReferenceData(path_to_working_directory = &amp;#34;.&amp;#34;, use_force = FALSE, install_suggested_packages = TRUE) 工作路径和参考数据路径不同！！！
+例如：
+工作路径：&amp;ldquo;C:/Users/your_name/Desktop/Tax4Fun2&amp;rdquo;
+参考数据路径：&amp;ldquo;C:/Users/your_name/Desktop/Tax4Fun2/Tax4Fun2_ReferenceData_v2&amp;rdquo;
+由于在windows中unzip命令存在一些问题，有的数据被下载了但无法解压。若存在这些问题请点击这里来下载完整的参考数据。然后在终端中提取数据并检查数据的一致性：
+# 1) 下载数据 wget -O RefData.zip https://cloudstor.aarnet.edu.au/plus/s/OoKjFHWmyKcc48V/download # 2）解压数据 unzip RefData.zip 检查数据的一致性
+testReferenceData(path_to_reference_data = &amp;#34;Tax4Fun2_ReferenceData_v2&amp;#34;) 安装依赖</description>
+    </item>
+    
     <item>
       <title>Math Braintrainer</title>
       <link>/projects/math-brain-trainer/</link>

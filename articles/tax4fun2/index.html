@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Tax4Fun2使用方法 | Blog</title>
+<meta name="keywords" content="privacy, services, trello, habitica, zenkit" />
+<meta name="description" content="Tax4Fun2参数详细介绍 Tax4Fun2只需一个依赖：
+BLAST（可以通过buildDependencies()命令安装） 为用到所有的函数，可能需要额外安装一些包
+R包seqinr和ape（可以通过buildDependencies()命令安装）
+功能注释需要用到Diamond（Mac用户需要自己编译）
+在v1.1.5版本中，Tax4Fun2使用vsearch进行序列聚类。
+安装Tax4Fun2，构建默认参考数据和安装所有依赖项 下载及安装Tax4Fun2
+点击这里下载R包或者在终端中运行 wget https://github.com/ZihaoShu/Tax4Fun2/raw/main/Tax4Fun2_1.1.5.tar.gz 安装Tax4Fun2 install.packages(pkgs = &#34;Tax4Fun2_1.1.5.tar.gz&#34;, repos = NULL, source = TRUE) 加载Tax4Fun2 library(Tax4Fun2) 构建默认参考数据库 使用buildReferenceData()命令将下载并构建默认的Tax4Fun2参考数据库，也可以一同安装R包ape和seqinr。此外还会测试路径中是否存在blast。为了确保下载成功，该函数还将使用me5sum自动检查下载数据的一致性。
+选项：
+path_to_working_directory = &quot;.&quot; &gt; Tax4Fun2的安装路径（默认安装在当前工作目录）
+use_force = FALSE &gt; 如果存在则覆盖文件夹（默认为FALSE）
+install_suggested_packages = TRUE &gt; 安装R包ape和seqinr（默认为TRUE）
+buildReferenceData(path_to_working_directory = &#34;.&#34;, use_force = FALSE, install_suggested_packages = TRUE) 工作路径和参考数据路径不同！！！
+例如：
+工作路径：&ldquo;C:/Users/your_name/Desktop/Tax4Fun2&rdquo;
+参考数据路径：&ldquo;C:/Users/your_name/Desktop/Tax4Fun2/Tax4Fun2_ReferenceData_v2&rdquo;
+由于在windows中unzip命令存在一些问题，有的数据被下载了但无法解压。若存在这些问题请点击这里来下载完整的参考数据。然后在终端中提取数据并检查数据的一致性：
+# 1) 下载数据 wget -O RefData.zip https://cloudstor.aarnet.edu.au/plus/s/OoKjFHWmyKcc48V/download # 2）解压数据 unzip RefData.zip 检查数据的一致性
+testReferenceData(path_to_reference_data = &#34;Tax4Fun2_ReferenceData_v2&#34;) 安装依赖">
+<meta name="author" content="Zihao Shu">
+<link rel="canonical" href="/articles/tax4fun2/" />
+<link crossorigin="anonymous" href="/assets/css/stylesheet.min.7bfe087ae72df31787ec7a1360dd05ee246a179b51cf7a30a904b39d7f813b69.css" integrity="sha256-e/4Ieuct8xeH7HoTYN0F7iRqF5tRz3owqQSznX&#43;BO2k=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.min.b95bacdc39e37a332a9f883b1e78be4abc1fdca2bc1f2641f55e3cd3dabd4d61.js" integrity="sha256-uVus3DnjejMqn4g7Hni&#43;Srwf3KK8HyZB9V4809q9TWE="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="/images/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="mask-icon" href="/images/apple-touch-icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="" accesskey="h" title="Blog (Alt + H)">Blog</a>
+            <span class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </span>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="Home"><span>Home</span></a>
+            </li>
+            <li>
+                <a href="/projects/" title="Projects">
+                    <span>Projects</span>
+                </a>
+            </li>
+            <li>
+                <a href="/articles/" title="Articles">
+                    <span>Articles</span>
+                </a>
+            </li>
+            <li>
+                <a href="/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="">Home</a>&nbsp;»&nbsp;<a href="/articles/">Articles</a></div>
+    <h1 class="post-title">
+      Tax4Fun2使用方法
+    </h1>
+    <div class="post-meta"><span title='2021-02-02 00:00:00 +0000 UTC'>February 2, 2021</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;Zihao Shu</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#tax4fun2%e5%8f%82%e6%95%b0%e8%af%a6%e7%bb%86%e4%bb%8b%e7%bb%8d" aria-label="Tax4Fun2参数详细介绍">Tax4Fun2参数详细介绍</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85tax4fun2%e6%9e%84%e5%bb%ba%e9%bb%98%e8%ae%a4%e5%8f%82%e8%80%83%e6%95%b0%e6%8d%ae%e5%92%8c%e5%ae%89%e8%a3%85%e6%89%80%e6%9c%89%e4%be%9d%e8%b5%96%e9%a1%b9" aria-label="安装Tax4Fun2，构建默认参考数据和安装所有依赖项">安装Tax4Fun2，构建默认参考数据和安装所有依赖项</a></li>
+                <li>
+                    <a href="#%e7%94%9f%e6%88%90%e8%87%aa%e5%b7%b1%e7%9a%84%e5%8f%82%e8%80%83%e6%95%b0%e6%8d%ae" aria-label="生成自己的参考数据">生成自己的参考数据</a></li>
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd%e9%a2%84%e6%b5%8b" aria-label="功能预测">功能预测</a></li>
+                <li>
+                    <a href="#%e8%ae%a1%e7%ae%97%e5%a4%9a%e5%8a%9f%e8%83%bd%e5%86%97%e4%bd%99%e6%8c%87%e6%95%b0%e5%ae%9e%e9%aa%8c" aria-label="计算（多）功能冗余指数（实验）">计算（多）功能冗余指数（实验）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e6%b5%81%e7%a8%8b" aria-label="工作流程">工作流程</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content">
+  <h1 id="tax4fun2参数详细介绍">Tax4Fun2参数详细介绍</h1>
+<p>Tax4Fun2只需一个依赖：</p>
+<ul>
+<li>BLAST（可以通过<code>buildDependencies()</code>命令安装）</li>
+</ul>
+<p>为用到所有的函数，可能需要额外安装一些包</p>
+<ul>
+<li>
+<p>R包<code>seqinr</code>和<code>ape</code>（可以通过<code>buildDependencies()</code>命令安装）</p>
+</li>
+<li>
+<p>功能注释需要用到<a href="http://www.crystalimpact.com/diamond/Default.htm">Diamond</a>（Mac用户需要自己编译）</p>
+</li>
+</ul>
+<p>在v1.1.5版本中，Tax4Fun2使用vsearch进行序列聚类。</p>
+<h2 id="安装tax4fun2构建默认参考数据和安装所有依赖项">安装Tax4Fun2，构建默认参考数据和安装所有依赖项</h2>
+<p><strong>下载及安装Tax4Fun2</strong></p>
+<ol>
+<li>点击<a href="https://github.com/ZihaoShu/Tax4Fun2/raw/main/Tax4Fun2_1.1.5.tar.gz">这里</a>下载R包或者在终端中运行</li>
+</ol>
+<pre tabindex="0"><code>wget https://github.com/ZihaoShu/Tax4Fun2/raw/main/Tax4Fun2_1.1.5.tar.gz
+</code></pre><ol start="2">
+<li>安装Tax4Fun2</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">install.packages</span><span class="p">(</span><span class="n">pkgs</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_1.1.5.tar.gz&#34;</span><span class="p">,</span> <span class="n">repos</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span></code></pre></div><ol start="3">
+<li>加载Tax4Fun2</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">Tax4Fun2</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>构建默认参考数据库</strong>
+使用<code>buildReferenceData()</code>命令将下载并构建默认的Tax4Fun2参考数据库，也可以一同安装R包<code>ape</code>和<code>seqinr</code>。此外还会测试路径中是否存在blast。为了确保下载成功，该函数还将使用<code>me5sum</code>自动检查下载数据的一致性。</p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>path_to_working_directory = &quot;.&quot;</code> &gt; Tax4Fun2的安装路径（默认安装在当前工作目录）</p>
+</li>
+<li>
+<p><code>use_force = FALSE</code> &gt; 如果存在则覆盖文件夹（默认为FALSE）</p>
+</li>
+<li>
+<p><code>install_suggested_packages = TRUE</code> &gt; 安装R包<code>ape</code>和<code>seqinr</code>（默认为TRUE）</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">buildReferenceData</span><span class="p">(</span><span class="n">path_to_working_directory</span> <span class="o">=</span> <span class="s">&#34;.&#34;</span><span class="p">,</span> <span class="n">use_force</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="n">install_suggested_packages</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>工作路径和参考数据路径不同！！！</strong></p>
+<p>例如：</p>
+<p>工作路径：&ldquo;C:/Users/your_name/Desktop/Tax4Fun2&rdquo;</p>
+<p>参考数据路径：&ldquo;C:/Users/your_name/Desktop/Tax4Fun2/Tax4Fun2_ReferenceData_v2&rdquo;</p>
+<p>由于在windows中unzip命令存在一些问题，有的数据被下载了但无法解压。若存在这些问题请点击<a href="https://cloudstor.aarnet.edu.au/plus/s/OoKjFHWmyKcc48V/download">这里</a>来下载完整的参考数据。然后在终端中提取数据并检查数据的一致性：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># 1) 下载数据</span>
+</span></span><span class="line"><span class="cl">wget -O RefData.zip https://cloudstor.aarnet.edu.au/plus/s/OoKjFHWmyKcc48V/download
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2）解压数据</span>
+</span></span><span class="line"><span class="cl">unzip RefData.zip
+</span></span></code></pre></div><p>检查数据的一致性</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">testReferenceData</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>安装依赖</strong></p>
+<p>该命令将下载当前最新版本的blast，并将二进制文件放在Tax4Fun2的参考文件夹中。此外还将测试R包<code>ape</code>和<code>seqinr</code>的存在。</p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>path_to_working_directory = &quot;.&quot;</code> &gt; 在Tax4Fun2安装文件夹中（默认安装在当前工作目录）</p>
+</li>
+<li>
+<p><code>use_force = FALSE</code> &gt; 如果存在则覆盖文件夹（默认为FALSE）</p>
+</li>
+<li>
+<p><code>install_suggested_packages = TRUE</code> &gt; 安装R包<code>ape</code>和<code>seqinr</code>（默认为TRUE）</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">buildDependencies</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;./Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">install_suggested_packages</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span></code></pre></div><p>:::{.callout-note}
+目录的路径应该指向由<code>buildReferenceData()</code>生成的文件夹
+:::</p>
+<p><strong>下载测试数据</strong></p>
+<p>该命令会自动下载并构建Tax4Fun2的测试数据</p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>path_to_working_directory = &quot;.&quot;</code> &gt; 在Tax4Fun2安装文件夹中（默认安装在当前工作目录）</p>
+</li>
+<li>
+<p><code>use_force = FALSE</code> &gt; 如果存在则覆盖文件夹（默认为FALSE）</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">getExampleData</span><span class="p">(</span><span class="n">path_to_working_directory</span> <span class="o">=</span> <span class="s">&#34;.&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>或者点击<a href="https://cloudstor.aarnet.edu.au/plus/s/4htgFinDIpzOuKK/download">这里</a>下载数据。</p>
+<h2 id="生成自己的参考数据">生成自己的参考数据</h2>
+<p><strong>提取SSU序列（16S rRNA and 18S rRNA）</strong></p>
+<p>选择单基因组（见第一个命令）或者选择包含多基因组的文件夹或MAGS（见第二个命令）</p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>genome_file or genome_folder</code> &gt; 指定一个包含多个基因组的文件或文件夹。多个基因组必须放在一个文件夹中(每个基因组一个文件)，并以相同的文件扩展名结尾。</p>
+</li>
+<li>
+<p><code>file_extension = &quot;fasta&quot;</code> &gt; Fasta单基因组文件或多基因组文件的扩展（默认为<code>&quot;fasta&quot;</code>）</p>
+</li>
+<li>
+<p><code>path_to_refernce_data = &quot;&quot;</code> &gt; 指定包含参考数据的文件夹</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1) 从单基因组中提取SSU序列</span>
+</span></span><span class="line"><span class="cl"><span class="nf">extractSSU</span><span class="p">(</span><span class="n">genome_file</span> <span class="o">=</span> <span class="s">&#34;OneProkaryoticGenome.fasta&#34;</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="s">&#34;fasta&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2) 从多基因组中提取SSU序列</span>
+</span></span><span class="line"><span class="cl"><span class="nf">extractSSU</span><span class="p">(</span><span class="n">genome_folder</span> <span class="o">=</span> <span class="s">&#34;MoreProkaryoticGenomes&#34;</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="s">&#34;fasta&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>:::{.callout-note}
+基因组中必须至少有一个16S或18S rRNA基因序列。运行命令删除“空”基因组（文件大小为0的基因组）后检查输出。
+:::</p>
+<p><strong>分配原核基因组的功能</strong></p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>genome_file or genome_folder</code> &gt; 指定一个包含多个基因组的文件或文件夹。多个基因组必须放在一个文件夹中(每个基因组一个文件)，并以相同的文件扩展名结尾。</p>
+</li>
+<li>
+<p><code>file_extension = &quot;fasta&quot;</code> &gt; Fasta单基因组文件或多基因组文件的扩展（默认为<code>&quot;fasta&quot;</code>）</p>
+</li>
+<li>
+<p><code>path_to_refernce_data = &quot;&quot;</code> &gt; 指定包含参考数据的文件夹</p>
+</li>
+<li>
+<p><code>num_of_threads = 1</code> &gt; Diamond的线程数</p>
+</li>
+<li>
+<p><code>fast = TRUE</code> &gt; 使用默认方式运行Diamond，FALSE调用Diamond时使用 &ndash;sensetive（可能会增加灵敏度但速度会变慢）</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1) 为单基因组分配功能</span>
+</span></span><span class="line"><span class="cl"><span class="nf">assignFunction</span><span class="p">(</span><span class="n">genome_file</span> <span class="o">=</span> <span class="s">&#34;OneProkaryoticGenome.fasta&#34;</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="s">&#34;fasta&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">num_of_threads</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="n">fast</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2) 为多基因组分配功能</span>
+</span></span><span class="line"><span class="cl"><span class="nf">assignFunction</span><span class="p">(</span><span class="n">genome_folder</span> <span class="o">=</span> <span class="s">&#34;MoreProkaryoticGenomes/&#34;</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="s">&#34;fasta&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">num_of_threads</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="n">fast</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>生成参考数据</strong></p>
+<p>在提取SSU序列和功能分配后，每个基因组至少有两个文件：一个带有SSU序列，另一个带有功能配置文件。为了生成最终数据集，选择存放这些文件的文件夹，并提供正确的文件扩展名(删除各自的文件扩展名将产生相同的文件名)。</p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>path_to_refernce_data = &quot;&quot;</code> &gt; 指定包含参考数据的文件夹</p>
+</li>
+<li>
+<p><code>path_to_user_data = &quot;&quot;</code> &gt; 指定包含基因组的文件夹的路径(在通过<code>extractSSU</code>和<code>assignFunction</code>命令运行之后)</p>
+</li>
+<li>
+<p><code>name_of_user_data = &quot;&quot;</code> &gt; 为数据指定一个名称。将在文件夹中生成一个文件夹，其中包含具有此名称的数据</p>
+</li>
+<li>
+<p><code>SSU_file_extension = &quot;_16SrRNA.ffn&quot;</code></p>
+</li>
+<li>
+<p><code>KEGG_file_extension = &quot;_funPro.txt&quot;</code></p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1) 单基因组生成参考数据不需要uclust</span>
+</span></span><span class="line"><span class="cl"><span class="nf">generateUserData</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;.&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;User_Ref0&#34;</span><span class="p">,</span> <span class="n">SSU_file_extension</span> <span class="o">=</span> <span class="s">&#34;_16SrRNA.ffn&#34;</span><span class="p">,</span> <span class="n">KEGG_file_extension</span> <span class="o">=</span> <span class="s">&#34;_funPro.txt&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2) 不使用uclust生成自定义参考数据</span>
+</span></span><span class="line"><span class="cl"><span class="nf">generateUserData</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;MoreProkaryoticGenomes&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;User_Ref1&#34;</span><span class="p">,</span> <span class="n">SSU_file_extension</span> <span class="o">=</span> <span class="s">&#34;_16SrRNA.ffn&#34;</span><span class="p">,</span> <span class="n">KEGG_file_extension</span> <span class="o">=</span> <span class="s">&#34;_funPro.txt&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3) 使用uclust生成自定义参考数据</span>
+</span></span><span class="line"><span class="cl"><span class="nf">generateUserDataByClustering</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;MoreProkaryoticGenomes&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;User_Ref2&#34;</span><span class="p">,</span> <span class="n">SSU_file_extension</span> <span class="o">=</span> <span class="s">&#34;_16SrRNA.ffn&#34;</span><span class="p">,</span> <span class="n">KEGG_file_extension</span> <span class="o">=</span> <span class="s">&#34;_funPro.txt&#34;</span><span class="p">,</span> <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">)</span>
+</span></span></code></pre></div><p>:::{.callout-note}
+推荐使用第二个命令，包含一个uclust聚类步骤，从而消除数据中的冗余
+:::</p>
+<h2 id="功能预测">功能预测</h2>
+<p>:::{.callout-note}
+OTU表的格式与测试数据中的格式一致！！！
+:::</p>
+<p><strong>使用默认参考数据进行功能预测</strong></p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>path_to_otus = &quot;&quot;</code> &gt; 指定包含otu序列的fasta文件的路径</p>
+</li>
+<li>
+<p><code>path_to_otu_table = &quot;</code> &gt; 指定otu表的路径</p>
+</li>
+<li>
+<p><code>path_to_refernce_data = &quot;&quot;</code> &gt; 指定参考数据所在文件夹的路径</p>
+</li>
+<li>
+<p><code>path_to_temp_folder = &quot;&quot;</code> &gt; 指定临时文件夹的路径。结果将存储在这里</p>
+</li>
+<li>
+<p><code>database_mode = &quot;Ref99NR&quot;</code> &gt; 以&rsquo;Ref99NR&rsquo;或&rsquo;Ref100NR&rsquo;作为数据库模式运行。这个数字是指uclust中使用的聚类阈值(分别为99%和100%)</p>
+</li>
+<li>
+<p><code>num_threads = 6</code> &gt; Diamond线程数</p>
+</li>
+<li>
+<p><code>use_force = TRUE</code> &gt; 如果存在则覆盖文件夹（默认为FALSE）</p>
+</li>
+<li>
+<p><code>normalize_by_copy_number = TRUE</code> &gt; 根据参考数据库中每个序列的平均16S rRNA拷贝数进行归一化</p>
+</li>
+<li>
+<p><code>normalize_pathways = FALSE</code> &gt; 将每个KO的rel.丰度关联到它所属的每个路径。通过将其设置为<code>TRUE</code>, rel.丰度将被均匀地分配到它所分配的所有路径</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1) 运行参考blast</span>
+</span></span><span class="line"><span class="cl"><span class="nf">runRefBlast</span><span class="p">(</span><span class="n">path_to_otus</span> <span class="o">=</span> <span class="s">&#34;KELP_otus.fasta&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">num_threads</span> <span class="o">=</span> <span class="m">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2) 功能预测配置</span>
+</span></span><span class="line"><span class="cl"><span class="nf">makeFunctionalPrediction</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;KELP_otu_table.txt&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">normalize_by_copy_number</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">,</span> <span class="n">normalize_pathways</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 或者</span>
+</span></span><span class="line"><span class="cl"><span class="nf">makeFunctionalPrediction</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;KELP_otu_table.txt&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">normalize_by_copy_number</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">,</span> <span class="n">normalize_pathways</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>使用默认数据库和用户生成的数据库(非聚类)进行功能预测</strong></p>
+<p>选项：</p>
+<ul>
+<li>
+<p><code>include_user_data = T</code> &gt; 在预测中包含用户数据</p>
+</li>
+<li>
+<p><code>name_of_user_data = &quot;&quot;</code> &gt; 给数据库命名</p>
+</li>
+<li>
+<p><code>path_to_user_data = &quot;&quot;</code> &gt; 指定要从中构建数据库的数据的路径</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1) 生成用户数据（指定用户数据路径[here: KELP_UserData]）；数据库将与您的数据一起在文件夹中生成</span>
+</span></span><span class="line"><span class="cl"><span class="nf">generateUserData</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP1&#34;</span><span class="p">,</span> <span class="n">SSU_file_extension</span> <span class="o">=</span> <span class="s">&#34;.ffn&#34;</span><span class="p">,</span> <span class="n">KEGG_file_extension</span> <span class="o">=</span> <span class="s">&#34;.txt&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2) 使用include_user_data = TRUE运行引用blast并指定用户数据的路径[here: KELP_UserData/KELP1]</span>
+</span></span><span class="line"><span class="cl"><span class="nf">runRefBlast</span><span class="p">(</span><span class="n">path_to_otus</span> <span class="o">=</span> <span class="s">&#34;KELP_otus.fasta&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR_withUser1&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">num_threads</span> <span class="o">=</span> <span class="m">6</span><span class="p">,</span> <span class="n">include_user_data</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP1&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3) 用你的数据进行预测</span>
+</span></span><span class="line"><span class="cl"><span class="nf">makeFunctionalPrediction</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;KELP_otu_table.txt&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR_withUser1&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">normalize_by_copy_number</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">,</span> <span class="n">normalize_pathways</span> <span class="o">=</span> <span class="bp">F</span><span class="p">,</span> <span class="n">include_user_data</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP1&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>使用默认数据库和用户生成的数据库(使用vsearch进行聚类)进行功能预测</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1) 生成用户数据（指定用户数据路径[here: KELP_UserData]）；数据库将与您的数据一起在文件夹中生成</span>
+</span></span><span class="line"><span class="cl"><span class="nf">generateUserDataByClustering</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP2&#34;</span><span class="p">,</span> <span class="n">SSU_file_extension</span> <span class="o">=</span> <span class="s">&#34;.ffn&#34;</span><span class="p">,</span> <span class="n">KEGG_file_extension</span> <span class="o">=</span> <span class="s">&#34;.txt&#34;</span><span class="p">,</span> <span class="n">similarity_threshold</span> <span class="o">=</span> <span class="m">0.99</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2) 使用include_user_data = TRUE运行引用blast并指定用户数据的路径[here: KELP_UserData/KELP1]</span>
+</span></span><span class="line"><span class="cl"><span class="nf">runRefBlast</span><span class="p">(</span><span class="n">path_to_otus</span> <span class="o">=</span> <span class="s">&#34;KELP_otus.fasta&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR_withUser2&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">num_threads</span> <span class="o">=</span> <span class="m">6</span><span class="p">,</span> <span class="n">include_user_data</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP2&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3) 用你的数据进行预测</span>
+</span></span><span class="line"><span class="cl"><span class="nf">makeFunctionalPrediction</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;KELP_otu_table.txt&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR_withUser2&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">normalize_by_copy_number</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">,</span> <span class="n">normalize_pathways</span> <span class="o">=</span> <span class="bp">F</span><span class="p">,</span> <span class="n">include_user_data</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP2&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="计算多功能冗余指数实验">计算（多）功能冗余指数（实验）</h2>
+<p>计算 KEGG 函数的系统发育分布（高 FRI -&gt; 高冗余，低 FRI -&gt; 功能冗余较少，可能会随着群落变化而消失）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1) 运行参考blast</span>
+</span></span><span class="line"><span class="cl"><span class="nf">runRefBlast</span><span class="p">(</span><span class="n">path_to_otus</span> <span class="o">=</span> <span class="s">&#34;Water_otus.fna&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Water_Ref99NR&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">num_threads</span> <span class="o">=</span> <span class="m">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2) 计算FRIs</span>
+</span></span><span class="line"><span class="cl"><span class="nf">calculateFunctionalRedundancy</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;Water_otu_table.txt&#34;</span><span class="p">,</span> <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Water_Ref99NR&#34;</span><span class="p">,</span> <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">)</span>
+</span></span></code></pre></div><h1 id="工作流程">工作流程</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># 1 安装 Tax4Fun2 包，构建默认参考数据并安装所有依赖项</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1.1 设置工作目录</span>
+</span></span><span class="line"><span class="cl"><span class="nf">setwd</span><span class="p">(</span><span class="s">&#34;D:/16sdata/Tax4Fun2_test&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">getwd</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1.2 将Tax4Fun2安装包下载在工作目录下，安装Tax4Fun2</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># https://github.com/bwemheu/Tax4Fun2/releases/download/1.1.5/Tax4Fun2_1.1.5.tar.gz</span>
+</span></span><span class="line"><span class="cl"><span class="nf">install.packages</span><span class="p">(</span><span class="n">pkgs</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_1.1.5.tar.gz&#34;</span><span class="p">,</span> <span class="n">repos</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">Tax4Fun2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1.3 构建默认数据库</span>
+</span></span><span class="line"><span class="cl"><span class="nf">buildReferenceData</span><span class="p">(</span><span class="n">path_to_working_directory</span> <span class="o">=</span> <span class="s">&#34;.&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                   <span class="n">use_force</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                   <span class="n">install_suggested_packages</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1.4 下载测试数据</span>
+</span></span><span class="line"><span class="cl"><span class="nf">getExampleData</span><span class="p">(</span><span class="n">path_to_working_directory</span> <span class="o">=</span> <span class="s">&#34;.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1.5安装依赖</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入NCBI官方网站下载最新版本的blast，截至2021/11/4已更新到v2.12.0，</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 将二进制文件放置在由buildReferenceData() [&#39;Tax4Fun2_ReferenceData_v2&#39;] 生成的文件夹。</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.12.0+-win64.exe</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2 生成自己的参考数据集</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2.1 提取单个基因组中的SSU序列（16S rRNA 和 18S rRNA）</span>
+</span></span><span class="line"><span class="cl"><span class="nf">extractSSU</span><span class="p">(</span><span class="n">genome_file</span> <span class="o">=</span> <span class="s">&#34;OneProkaryoticGenome.fasta&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">           <span class="n">file_extension</span> <span class="o">=</span> <span class="s">&#34;fasta&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">           <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2.2 为单个原核基因组分配功能</span>
+</span></span><span class="line"><span class="cl"><span class="nf">assignFunction</span><span class="p">(</span><span class="n">genome_file</span> <span class="o">=</span> <span class="s">&#34;OneProkaryoticGenome.fasta&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">               <span class="n">file_extension</span> <span class="o">=</span> <span class="s">&#34;fasta&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">               <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">               <span class="n">num_of_threads</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="n">fast</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2.3 生成参考数据</span>
+</span></span><span class="line"><span class="cl"><span class="nf">generateUserData</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;.&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;User_Ref0&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">SSU_file_extension</span> <span class="o">=</span> <span class="s">&#34;_16SrRNA.ffn&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">KEGG_file_extension</span> <span class="o">=</span> <span class="s">&#34;_funPro.txt&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3 进行功能预测</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3.1 仅使用默认参考数据进行功能预测</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3.1.2 运行RefBlast工具参考Ref99NR进行序列同源比对</span>
+</span></span><span class="line"><span class="cl"><span class="nf">runRefBlast</span><span class="p">(</span><span class="n">path_to_otus</span> <span class="o">=</span> <span class="s">&#34;KELP_otus.fasta&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">num_threads</span> <span class="o">=</span> <span class="m">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3.1.3 功能注释</span>
+</span></span><span class="line"><span class="cl"><span class="nf">makeFunctionalPrediction</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;KELP_otu_table.txt&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">normalize_by_copy_number</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">normalize_pathways</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3.2 使用默认数据库和用户生成的数据库（非集群）进行功能预测</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3.2.1 生成用户数据库</span>
+</span></span><span class="line"><span class="cl"><span class="nf">generateUserData</span><span class="p">(</span><span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP1&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">SSU_file_extension</span> <span class="o">=</span> <span class="s">&#34;.ffn&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">KEGG_file_extension</span> <span class="o">=</span> <span class="s">&#34;.txt&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3.2.2 运行RefBlast工具</span>
+</span></span><span class="line"><span class="cl"><span class="nf">runRefBlast</span><span class="p">(</span><span class="n">path_to_otus</span> <span class="o">=</span> <span class="s">&#34;KELP_otus.fasta&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR_withUser1&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">num_threads</span> <span class="o">=</span> <span class="m">6</span><span class="p">,</span> <span class="n">include_user_data</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP1&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3.2.3 功能注释</span>
+</span></span><span class="line"><span class="cl"><span class="nf">makeFunctionalPrediction</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;KELP_otu_table.txt&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Kelp_Ref99NR_withUser1&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">normalize_by_copy_number</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">normalize_pathways</span> <span class="o">=</span> <span class="bp">F</span><span class="p">,</span> <span class="n">include_user_data</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">path_to_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP_UserData&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                         <span class="n">name_of_user_data</span> <span class="o">=</span> <span class="s">&#34;KELP1&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 4 计算（多）功能冗余指数（实验性）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 计算 KEGG 函数的系统发育分布（高 FRI -&gt; 高冗余，低 FRI -&gt; 函数冗余较少，可能会随着社区变化而丢失）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 4.1 运行RefBlast工具</span>
+</span></span><span class="line"><span class="cl"><span class="nf">runRefBlast</span><span class="p">(</span><span class="n">path_to_otus</span> <span class="o">=</span> <span class="s">&#34;Water_otus.fna&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Water_Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">use_force</span> <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> <span class="n">num_threads</span> <span class="o">=</span> <span class="m">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 4.2 计算FRIs</span>
+</span></span><span class="line"><span class="cl"><span class="nf">calculateFunctionalRedundancy</span><span class="p">(</span><span class="n">path_to_otu_table</span> <span class="o">=</span> <span class="s">&#34;Water_otu_table.txt&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                              <span class="n">path_to_reference_data</span> <span class="o">=</span> <span class="s">&#34;Tax4Fun2_ReferenceData_v2&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                              <span class="n">path_to_temp_folder</span> <span class="o">=</span> <span class="s">&#34;Water_Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                              <span class="n">database_mode</span> <span class="o">=</span> <span class="s">&#34;Ref99NR&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                              <span class="n">min_identity_to_reference</span> <span class="o">=</span> <span class="m">0.97</span><span class="p">)</span>
+</span></span></code></pre></div>
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="/tags/privacy/">privacy</a></li>
+      <li><a href="/tags/services/">services</a></li>
+      <li><a href="/tags/trello/">trello</a></li>
+      <li><a href="/tags/habitica/">habitica</a></li>
+      <li><a href="/tags/zenkit/">zenkit</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span> built with ♥ from charlola
+      
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerText = 'copy';
+
+        function copyingDone() {
+            copybutton.innerText = 'copied!';
+            setTimeout(() => {
+                copybutton.innerText = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

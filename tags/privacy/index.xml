@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Articles on Blog</title>
-    <link>/articles/</link>
-    <description>Recent content in Articles on Blog</description>
+    <title>privacy on Blog</title>
+    <link>/tags/privacy/</link>
+    <description>Recent content in privacy on Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 02 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="/articles/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 02 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/privacy/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Tax4Fun2使用方法</title>
       <link>/articles/tax4fun2/</link>
@@ -30,15 +30,6 @@ buildReferenceData(path_to_working_directory = &amp;#34;.&amp;#34;, use_force = 
 由于在windows中unzip命令存在一些问题，有的数据被下载了但无法解压。若存在这些问题请点击这里来下载完整的参考数据。然后在终端中提取数据并检查数据的一致性：
 # 1) 下载数据 wget -O RefData.zip https://cloudstor.aarnet.edu.au/plus/s/OoKjFHWmyKcc48V/download # 2）解压数据 unzip RefData.zip 检查数据的一致性
 testReferenceData(path_to_reference_data = &amp;#34;Tax4Fun2_ReferenceData_v2&amp;#34;) 安装依赖</description>
-    </item>
-    
-    <item>
-      <title>Surprise Surprise</title>
-      <link>/articles/article/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/articles/article/</guid>
-      <description>Thank you for your support! Hello. If you like this template, I&amp;rsquo;d be happy to get a coffee donation :)</description>
     </item>
     
   </channel>

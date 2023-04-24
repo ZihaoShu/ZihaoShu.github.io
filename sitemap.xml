@@ -3,10 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/articles/</loc>
-  </url><url>
-    <loc>/categories/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/categories/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/categories/computers/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/habitica/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/privacy/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/services/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/articles/tax4fun2/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/trello/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/zenkit/</loc>
+    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/contact/</loc>
   </url><url>
@@ -15,7 +42,5 @@
     <loc>/projects/</loc>
   </url><url>
     <loc>/articles/article/</loc>
-  </url><url>
-    <loc>/tags/</loc>
   </url>
 </urlset>
