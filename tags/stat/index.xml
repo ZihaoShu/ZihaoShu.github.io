@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>stat on Blog</title>
+    <link>/tags/stat/</link>
+    <description>Recent content in stat on Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>© 2023 Zihao Shu</copyright><atom:link href="/tags/stat/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ANOVA</title>
+      <link>/articles/anova/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/articles/anova/</guid>
+      <description>介绍 方差分析（ANOVA）是一种用于确定两个或多个总体均值之间是否存在不同的统计检验，即用于比较两个或多个组之间是否存在显著性差异。
+t检验（t-test）用于比较两组 ANOVA将t-test推广到两组之外，用于比较三组或多组 方差分析有多种版本(如：单因素方差分析（one-way ANOVA）、双因素方差分析（two-way ANOVA）、混合方差分析（mixed ANOVA）、重复测量方差分析（repeated measures ANOVA）等)。在本文中，我们只介绍最简单的形式ーー单因素方差分析(one-way ANOVA) ，并在本文的其余部分称之为方差分析(ANOVA)。
+方差分析通过比较组间方差（between）和组内方差（within）来推断不同组别的均值是否存在显著性差异，如果组间方差大于组内方差，则表明两组之间的均值存在差异，然后计算组内和组件方差之间的比率（$\frac{variance_{between}}{variance_{within}}$），将该比率与Fisher概率分布的阈值（基于特定显著性水平的阈值，通常为5%）进行比较，来得出两组之间的均值的差异是否显著。
+在本文以下的内容中涵盖以下几点：
+方差分析的目的，什么时候应该使用零和替代假设。
+方差分析的基本假设，以及如何检验
+如何在R中进行方差分析
+如何解释方差分析的结果
+理解事后检验的概念并解释检验结果
+可视化方差分析的结果和事后检验
+数据 示例数据为palmerpenguins包中的penguins数据
+# install.packages(&amp;quot;palmerpenguins&amp;quot;)library(palmerpenguins)该数据集包含3个不同物种（Adelie, chinstrap和Gentoo）的344只企鹅数据。数据集包含8个变量，但我们只关注鳍的长度和种类这两个变量：
+library(tidyverse)## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──## ✔ ggplot2 3.4.2 ✔ purrr 1.0.1## ✔ tibble 3.2.1 ✔ dplyr 1.1.2## ✔ tidyr 1.2.1 ✔ stringr 1.4.1## ✔ readr 2.1.3 ✔ forcats 0.5.2## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──## ✖ dplyr::filter() masks stats::filter()## ✖ dplyr::lag() masks stats::lag()dat &amp;lt;- penguins %&amp;gt;%select(species, flipper_length_mm)在进行方差分析之前应先进行一些基本的描述性统计数据分析：</description>
+    </item>
+    
+  </channel>
+</rss>
