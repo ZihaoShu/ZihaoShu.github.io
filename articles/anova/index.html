@@ -5,21 +5,18 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>ANOVA | Blog</title>
-<meta name="keywords" content="stat" />
+<title>Blog</title>
+<meta name="keywords" content="" />
 <meta name="description" content="介绍 方差分析（ANOVA）是一种用于确定两个或多个总体均值之间是否存在不同的统计检验，即用于比较两个或多个组之间是否存在显著性差异。
-t检验（t-test）用于比较两组 ANOVA将t-test推广到两组之外，用于比较三组或多组 方差分析有多种版本(如：单因素方差分析（one-way ANOVA）、双因素方差分析（two-way ANOVA）、混合方差分析（mixed ANOVA）、重复测量方差分析（repeated measures ANOVA）等)。在本文中，我们只介绍最简单的形式ーー单因素方差分析(one-way ANOVA) ，并在本文的其余部分称之为方差分析(ANOVA)。
+方差分析有多种版本(如：单因素方差分析（one-way ANOVA）、双因素方差分析（two-way ANOVA）、混合方差分析（mixed ANOVA）、重复测量方差分析（repeated measures ANOVA）等)，本文只介绍单因素方差分析(one-way ANOVA) ，并在本文的其余部分称之为方差分析(ANOVA)。
 方差分析通过比较组间方差（between）和组内方差（within）来推断不同组别的均值是否存在显著性差异，如果组间方差大于组内方差，则表明两组之间的均值存在差异，然后计算组内和组件方差之间的比率（$\frac{variance_{between}}{variance_{within}}$），将该比率与Fisher概率分布的阈值（基于特定显著性水平的阈值，通常为5%）进行比较，来得出两组之间的均值的差异是否显著。
-在本文以下的内容中涵盖以下几点：
-方差分析的目的，什么时候应该使用零和替代假设。
-方差分析的基本假设，以及如何检验
-如何在R中进行方差分析
-如何解释方差分析的结果
-理解事后检验的概念并解释检验结果
-可视化方差分析的结果和事后检验
 数据 示例数据为palmerpenguins包中的penguins数据
-# install.packages(&quot;palmerpenguins&quot;)library(palmerpenguins)该数据集包含3个不同物种（Adelie, chinstrap和Gentoo）的344只企鹅数据。数据集包含8个变量，但我们只关注鳍的长度和种类这两个变量：
-library(tidyverse)## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──## ✔ ggplot2 3.4.2 ✔ purrr 1.0.1## ✔ tibble 3.2.1 ✔ dplyr 1.1.2## ✔ tidyr 1.2.1 ✔ stringr 1.4.1## ✔ readr 2.1.3 ✔ forcats 0.5.2## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──## ✖ dplyr::filter() masks stats::filter()## ✖ dplyr::lag() masks stats::lag()dat &lt;- penguins %&gt;%select(species, flipper_length_mm)在进行方差分析之前应先进行一些基本的描述性统计数据分析：">
+# install.packages(&quot;palmerpenguins&quot;)library(palmerpenguins)该数据集中包含344只三种企鹅（Adelie,chinstrap和Gentoo）的八项观测数据，在本文中只保留鳍长和种类两项数据用于后续演示：
+先对数据进行一些描述性统计分析：
+summary(dat)## species flipper_length_mm## Adelie :152 Min. :172.0 ## Chinstrap: 68 1st Qu.:190.0 ## Gentoo :124 Median :197.0 ## Mean :200.9 ## 3rd Qu.:213.0 ## Max. :231.0 ## NA&#39;s :2根据上表可以看到
+鳍长范围在172 - 231 mm之间，平均长度为200.9 mm；
+Adelie、Chinstrap以及Gentoo分别有152、68以及124只。
+library(ggplot2)ggplot(dat) &#43;aes(x = species, y = flipper_length_mm, color = species) &#43;geom_jitter() &#43;theme(legend.">
 <meta name="author" content="Zihao Shu">
 <link rel="canonical" href="/articles/anova/" />
 <link crossorigin="anonymous" href="/assets/css/stylesheet.min.7bfe087ae72df31787ec7a1360dd05ee246a179b51cf7a30a904b39d7f813b69.css" integrity="sha256-e/4Ieuct8xeH7HoTYN0F7iRqF5tRz3owqQSznX&#43;BO2k=" rel="preload stylesheet" as="style">
@@ -128,7 +125,7 @@ library(tidyverse)## ── Attaching packages ──────────�
   <header class="post-header">
     <div class="breadcrumbs"><a href="">Home</a>&nbsp;»&nbsp;<a href="/articles/">Articles</a></div>
     <h1 class="post-title">
-      ANOVA
+      
     </h1>
     <div class="post-meta">7 min&nbsp;·&nbsp;Zihao Shu</div>
   </header> <div class="toc">
@@ -156,9 +153,9 @@ library(tidyverse)## ── Attaching packages ──────────�
                 <li>
                     <a href="#%e6%96%b9%e5%b7%ae%e9%bd%90%e6%80%a7" aria-label="方差齐性">方差齐性</a></li>
                 <li>
-                    <a href="#%e6%a3%80%e9%aa%8c%e6%ad%a3%e6%80%81%e6%80%a7%e5%92%8c%e6%96%b9%e5%b7%ae%e9%bd%90%e6%80%a7%e7%9a%84%e5%8f%a6%e4%b8%80%e7%a7%8d%e6%96%b9%e6%b3%95" aria-label="检验正态性和方差齐性的另一种方法">检验正态性和方差齐性的另一种方法</a></li>
+                    <a href="#%e5%bc%82%e5%b8%b8%e5%80%bc" aria-label="异常值">异常值</a></li>
                 <li>
-                    <a href="#%e5%bc%82%e5%b8%b8%e5%80%bc" aria-label="异常值">异常值</a></li></ul>
+                    <a href="#%e5%81%87%e8%ae%be%e5%89%8d%e6%8f%90%e5%b0%8f%e7%bb%93" aria-label="假设前提小结">假设前提小结</a></li></ul>
                 </li>
                 <li>
                     <a href="#anova" aria-label="ANOVA">ANOVA</a><ul>
@@ -193,59 +190,19 @@ library(tidyverse)## ── Attaching packages ──────────�
   <div class="post-content">
   <h1 id="介绍">介绍</h1>
 <p>方差分析（ANOVA）是一种用于确定两个或多个总体均值之间是否存在不同的统计检验，即用于比较两个或多个组之间是否存在显著性差异。</p>
-<ul>
-<li>t检验（t-test）用于比较两组</li>
-<li>ANOVA将t-test推广到两组之外，用于比较三组或多组</li>
-</ul>
 <p>方差分析有多种版本(如：单因素方差分析（one-way
 ANOVA）、双因素方差分析（two-way ANOVA）、混合方差分析（mixed
 ANOVA）、重复测量方差分析（repeated measures
-ANOVA）等)。在本文中，我们只介绍最简单的形式ーー单因素方差分析(one-way
-ANOVA) ，并在本文的其余部分称之为方差分析(ANOVA)。</p>
+ANOVA）等)，本文只介绍单因素方差分析(one-way ANOVA)
+，并在本文的其余部分称之为方差分析(ANOVA)。</p>
 <p>方差分析通过比较组间方差（between）和组内方差（within）来推断不同组别的均值是否存在显著性差异，如果组间方差大于组内方差，则表明两组之间的均值存在差异，然后计算组内和组件方差之间的比率（$\frac{variance_{between}}{variance_{within}}$），将该比率与Fisher概率分布的阈值（基于特定显著性水平的阈值，通常为5%）进行比较，来得出两组之间的均值的差异是否显著。</p>
-<p>在本文以下的内容中涵盖以下几点：</p>
-<ul>
-<li>
-<p>方差分析的目的，什么时候应该使用零和替代假设。</p>
-</li>
-<li>
-<p>方差分析的基本假设，以及如何检验</p>
-</li>
-<li>
-<p>如何在R中进行方差分析</p>
-</li>
-<li>
-<p>如何解释方差分析的结果</p>
-</li>
-<li>
-<p>理解事后检验的概念并解释检验结果</p>
-</li>
-<li>
-<p>可视化方差分析的结果和事后检验</p>
-</li>
-</ul>
 <h1 id="数据">数据</h1>
 <p>示例数据为<code>palmerpenguins</code>包中的<code>penguins</code>数据</p>
 <pre><code># install.packages(&quot;palmerpenguins&quot;)
 library(palmerpenguins)
 </code></pre>
-<p>该数据集包含3个不同物种（Adelie,
-chinstrap和Gentoo）的344只企鹅数据。数据集包含8个变量，但我们只关注鳍的长度和种类这两个变量：</p>
-<pre><code>library(tidyverse)
-
-## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.2     ✔ purrr   1.0.1
-## ✔ tibble  3.2.1     ✔ dplyr   1.1.2
-## ✔ tidyr   1.2.1     ✔ stringr 1.4.1
-## ✔ readr   2.1.3     ✔ forcats 0.5.2
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-
-dat &lt;- penguins %&gt;%
-  select(species, flipper_length_mm)
-</code></pre>
-<p>在进行方差分析之前应先进行一些基本的描述性统计数据分析：</p>
+<p>该数据集中包含344只三种企鹅（Adelie,chinstrap和Gentoo）的八项观测数据，在本文中只保留鳍长和种类两项数据用于后续演示：</p>
+<p>先对数据进行一些描述性统计分析：</p>
 <pre><code>summary(dat)
 
 ##       species    flipper_length_mm
@@ -257,8 +214,16 @@ dat &lt;- penguins %&gt;%
 ##                  Max.   :231.0    
 ##                  NA's   :2
 </code></pre>
-<p>鳍的长度范围在172 - 231 mm之间，平均长度为200.9
-mm。Adelie、Chinstrap以及Gentoo分别有152、68以及124只。</p>
+<p>根据上表可以看到</p>
+<ul>
+<li>
+<p>鳍长范围在172 - 231 mm之间，平均长度为200.9 mm；</p>
+</li>
+<li>
+<p>Adelie、Chinstrap以及Gentoo分别有152、68以及124只。</p>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 <pre><code>library(ggplot2)
 
 ggplot(dat) +
@@ -269,42 +234,30 @@ ggplot(dat) +
 <p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-4-1.png" alt=""  />
 </p>
 <h1 id="方差分析的目的">方差分析的目的</h1>
-<p>一般而言方差分析用于：</p>
+<p>方差分析用于研究分析定性数据（X）与定量数据（Y）之间的差异。</p>
+<p>在本文中我们将使用方差分析来回答“<strong>3种企鹅的鳍长是否不同？</strong>”这个问题。</p>
+<p>方差分析的原假设和备择假设分别为：</p>
 <ul>
 <li>
-<p>研究分类变量在不同模式（在方差分析中也称为水平或治疗）下的测量值是否相似</p>
+<p><em>H</em><!-- raw HTML omitted -->0<!-- raw HTML omitted --> : <em>μ</em><!-- raw HTML omitted --><em>A<strong>d</strong>e<strong>l</strong>i**e</em><!-- raw HTML omitted --> = <em>μ</em><!-- raw HTML omitted --><em>C<strong>h</strong>i<strong>n</strong>s<strong>t</strong>r<strong>a</strong>p</em><!-- raw HTML omitted --> = <em>μ</em><!-- raw HTML omitted --><em>G<strong>e</strong>n<strong>t</strong>o**o</em><!-- raw HTML omitted -->（<em>三<strong>个</strong>物<strong>种</strong>的<strong>鳍</strong>长<strong>相</strong>同</em>）</p>
 </li>
 <li>
-<p>比较不同水平的分类变量对定量变量的影响</p>
-</li>
-<li>
-<p>解释基于定性变量的定量变量</p>
+<p><em>H</em><!-- raw HTML omitted -->1<!-- raw HTML omitted --> : <em>至<strong>少</strong>有<strong>一</strong>个<strong>均</strong>值<strong>不</strong>同</em>（<em>至<strong>少</strong>有<strong>一</strong>个<strong>物</strong>种<strong>的</strong>鳍<strong>长</strong>不<strong>同</strong>于<strong>其</strong>他<strong>物</strong>种</em>）</p>
 </li>
 </ul>
-<p>在本文中我们将使用方差分析来回答“<strong>3种企鹅的鳍的长度是否不同？</strong>”这个问题。</p>
-<p>方差分析的零假设和备择假设分别为：</p>
-<ul>
-<li>
-<p><em>H</em><!-- raw HTML omitted -->0<!-- raw HTML omitted --> : <em>μ</em><!-- raw HTML omitted --><em>A<strong>d</strong>e<strong>l</strong>i**e</em><!-- raw HTML omitted --> = <em>μ</em><!-- raw HTML omitted --><em>C<strong>h</strong>i<strong>n</strong>s<strong>t</strong>r<strong>a</strong>p</em><!-- raw HTML omitted --> = <em>μ</em><!-- raw HTML omitted --><em>G<strong>e</strong>n<strong>t</strong>o**o</em><!-- raw HTML omitted -->（<em>三<strong>个</strong>物<strong>种</strong>的<strong>鳍</strong>长<strong>度</strong>是<strong>相</strong>同**的</em>）</p>
-</li>
-<li>
-<p><em>H</em><!-- raw HTML omitted -->1<!-- raw HTML omitted --> : <em>至<strong>少</strong>有<strong>一</strong>个<strong>的</strong>均<strong>值</strong>是<strong>不</strong>同**的</em>（<em>至<strong>少</strong>有<strong>一</strong>个<strong>物</strong>种<strong>与</strong>其<strong>他</strong>两<strong>个</strong>物<strong>种</strong>的<strong>鳍</strong>长<strong>度</strong>不**同</em>）</p>
-</li>
-</ul>
-<p>要注意另一种假设并不是所有物种的鳍都不相同，所有均值相等（<em>H</em><!-- raw HTML omitted -->0<!-- raw HTML omitted -->）的对立面应该是至少有一个均值不同于其他均值（<em>H</em><!-- raw HTML omitted -->1<!-- raw HTML omitted -->）。</p>
-<p>在这个基础上如果零假设被拒绝，那么表明至少有一个均值不同于其他两个均值，但不一定三个均值均不相同。这可能是Adelie的鳍长度不同于Chinstrap和Gentoo的鳍长度，而Chinstrap和Gentoo的鳍长度则是相同的。而检验三个物种之间是否不同则应使用事后检验。</p>
+<p>注意备择假设并不是所有均值都不相同，原假设（<em>H</em><!-- raw HTML omitted -->0<!-- raw HTML omitted -->）的对立面应该是至少有一个均值不同于其他均值（<em>H</em><!-- raw HTML omitted -->1<!-- raw HTML omitted -->）。</p>
+<p>在这个基础上如果原假设被拒绝，那么表明至少有一个均值不同于其他两个均值，但不一定三个均值均不相同。这可能是Adelie的鳍长不同于Chinstrap和Gentoo的鳍长，而Chinstrap和Gentoo的鳍长则是相同的，可以通过事后检验来具体分析三个物种鳍长之间的差异。</p>
 <h1 id="方差分析的基本假设">方差分析的基本假设</h1>
-<p>统计检验的执行需要满足假设前提，当一个或几个假设不能满足时，虽然在技术上可以执行统计检验，但解释结果并相信结论是不正确的。</p>
-<p>以下是方差分析的假设：</p>
-<ul>
-<li>
-<p><strong>变量类型</strong>：方差分析需要一个连续的定量因变量（与问题相关的测量结果相对应）和一个定性自变量（至少有两个水平）的混合。</p>
-</li>
-<li>
-<p><strong>独立性</strong>：独立性的假设通常基于实验的设计和对实验条件的良好控制来实现，而不是通过形式化的测试来验证的。</p>
-</li>
-<li>
-<p><strong>正态性</strong>：</p>
+<p>统计检验的执行需要满足假设前提，当一个或几个假设不能满足时，在技术上可以执行统计检验，但解释结果并相信结论是不正确的。</p>
+<h2 id="变量类型">变量类型</h2>
+<p>方差分析需要一个连续的定量因变量（与问题相关的测量结果相对应）和一个定性自变量（至少有两个水平）的混合。</p>
+<p>因变量<code>flipper_length_mm</code>是一个定量变量，而自变量<code>species</code>是一个定性变量（三个物种），所以我们混合了两种类型的变量，并满足了该假设</p>
+<h2 id="独立性">独立性</h2>
+<p><strong>独立性</strong>的假设通常基于实验的设计和对实验条件的良好控制来实现，而不是通过形式化的测试来验证的。</p>
+<p>由于数据是从随机选择的种群中收集的，因此假定观测结果是独立的，且三个样本组合和组间的测量结果是不相关的。</p>
+<p>也可以通过Durbin-Watson
+test（<code>durbinWatsonTest(res_lm)</code>，<code>res_lm</code>是线性模型）来检验数据是否符合独立性。这个检验的原假设是指定一个自相关系数=0，而备择假设指定一个自相关系数≠0。</p>
+<h2 id="正态性">正态性</h2>
 <ul>
 <li>
 <p>在小样本的情况下，残差应符合正态分布。可以通过直方图和Q-Q图直观的检验正态性假设，或可以使用正式的正态性检验（如Shapiro-Wilk或Kolmogorov-Smirnov
@@ -315,19 +268,160 @@ test（<code>kruskal.test(variable ~ group, data = dat</code>）。这种对非�
 <p>在大样本的情况下，根据中心极限定理，即使数据不符合正态分布，大样本的样品平均值通常也是正态分布的近似值。因此当样本的数据量很大（通常≥30）时，不需要检验正态假设。</p>
 </li>
 </ul>
+<p>由于每个物种的最小样本量是68，因此不需要检验正态性，通常会直接检验方差齐性。</p>
+<p>残差的正态性可以通过直方图和Q-Q图来检验，也可以通过Shapiro-Wilk test。</p>
+<p>在检验正态性之前，需要先计算ANOVA，并将结果保存在<code>res_aov</code>中：</p>
+<pre><code>res_aov &lt;- aov(flipper_length_mm ~ species,
+  data = dat
+)
+</code></pre>
+<p>然后可以通过直方图或Q-Q图直观的进行检验：</p>
+<pre><code>par(mfrow = c(1, 2)) # combine plots
+
+# histogram
+hist(res_aov$residuals)
+
+# QQ-plot
+library(car)
+
+## 载入需要的程辑包：carData
+
+## 
+## 载入程辑包：'car'
+
+## The following object is masked from 'package:dplyr':
+## 
+##     recode
+
+## The following object is masked from 'package:purrr':
+## 
+##     some
+
+qqPlot(res_aov$residuals,
+  id = FALSE # id = FALSE to remove point identification
+)
+</code></pre>
+<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-6-1.png" alt=""  />
+</p>
+<p>通过上面的直方图和Q-Q图，可以看到数据符合正态性。直方图大致形成一条钟形曲线，表明残差遵循正态分布。Q-Q图中的点大致沿着直线走，而且大多数都在置信区间内，这也表明残差近似遵循正态分布。</p>
+<p>一些研究人员在这里停下来，而其他人也通过正式的正态性检验来检验这一假设。您可以选择(i)只进行视觉测试，(ii)只通过正常性测试，或者(iii)既进行视觉测试又进行正常性测试。但请记住以下两点:</p>
+<ol>
+<li>
+<p>方差分析的鲁棒性很小，偏离正态分布。如果有少量的点稍微偏离正态分布，就不是一个问题(从方差分析结果的解释角度来看)；</p>
 </li>
 <li>
-<p><strong>方差齐性</strong>：不同组的方差在总体上应该是相等的。这个假设可以通过图形化的方式进行检验（如通过比较箱线图或点线图中的离散度），或正式的使用Levene’s
-test（使用<code>car</code>包中的<code>leveneTest(variable ~ group)</code>）或Bartlett
-test。如果数据不符合方差齐性的假设，可以使用Welch
-ANOVA（<code>oneway.test(variable ~ group, var.equal = FALSE)</code>）。Welch
-ANOVA不要求数据满足方差齐心，但数据应符合正态分布。而Kruskal-Wallis
-test不要求数据符合正态分布以及方差齐性。</p>
+<p>正态性检验有时相当保守，正态性的零假设可能会因为有限的偏离正态性而被拒绝。特别是对于大样本的情况，随着样本量的增加，测试的功率也随之增加。</p>
+</li>
+</ol>
+<p>现在通过Shapiro-Wilk test（或Kolmogorov-Smirnov test）来检验正态性假设：</p>
+<ul>
+<li>
+<p><em>H</em><!-- raw HTML omitted -->0<!-- raw HTML omitted --> : <em>数<strong>据</strong>来<strong>自</strong>正<strong>态</strong>分**布</em></p>
 </li>
 <li>
-<p><strong>异常值</strong>：是一个远离其他观测值的值。不同组别间应没有明显的异常值，否则方差分析的结论可能有缺陷。</p>
+<p><em>H</em><!-- raw HTML omitted -->1<!-- raw HTML omitted --> : <em>数<strong>据</strong>不<strong>是</strong>来<strong>自</strong>正<strong>态</strong>分**布</em></p>
 </li>
 </ul>
+<!-- raw HTML omitted -->
+<pre><code>shapiro.test(res_aov$residuals)
+
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  res_aov$residuals
+## W = 0.99452, p-value = 0.2609
+</code></pre>
+<p>Shapiro-Wilk
+test的P值大于一般的显著性水平（α=5%），因此接受零假设，即数据来自正态分布。</p>
+<p>正态性假设也可以在“原始”数据(即观察数据)上进行检验，但是如果在原始数据上进行正态性检验，则需要分别对每个组进行正态性检验，因为方差分析要求每个组的数据都符合正态性；而对所有数据的残差或每组数据的残差分别进行正态性检验，所得到的结果是相同的。实际上“Y在每个组中的分布是正态分布的”就等同于说“残差是正态分布的”。残差是Y的实际值与特定值x的Y的平均值之间的距离，因此在计算残差时会引入分组变量。</p>
+<p>在ANOVA中实际上有两种正态性检验方法：</p>
+<ul>
+<li>
+<p>分别检验每组“原始”数据(Y值)的正态性</p>
+</li>
+<li>
+<p>检验所有残差的正态性(但不是每组)</p>
+</li>
+</ul>
+<p>在实际中使用残差进行检验会更加方便，特别是如果你有很多组或者每组只有很少的观察结果。</p>
+<p>ANOVA是线性模型的一个特例。假设自变量是一个连续变量（而不是分类变量），唯一剩下的选择就是检验残差的正态性，这正是在线性回归模型中检验正态性的方法。</p>
+<h2 id="方差齐性">方差齐性</h2>
+<p>不同组的方差在总体上应该是相等的。这个假设可以通过图形化的方式进行检验（如通过比较箱线图或点线图中的离散度），或使用Levene’s
+test（使用<code>car</code>包中的<code>leveneTest(variable ~ group)</code>）或Bartlett
+test进行方差齐性检验。</p>
+<p>如果数据不符合方差齐性的假设，则可以使用Welch
+ANOVA（<code>oneway.test(variable ~ group, var.equal = FALSE)</code>）。Welch
+ANOVA不要求数据满足方差齐性，但数据应符合正态分布。</p>
+<p>如果数据不符合正态性和方差齐性，则可使用非参数检验（Kruskal-Wallis
+test）。</p>
+<p>假设数据符合正态分布，接下来可以使用箱线图或点线图来检验数据方差是否符合齐性：</p>
+<pre><code># Boxplot
+boxplot(flipper_length_mm ~ species,
+  data = dat
+)
+</code></pre>
+<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-8-1.png" alt=""  />
+</p>
+<pre><code># Dotplot
+library(&quot;lattice&quot;)
+
+dotplot(flipper_length_mm ~ species,
+  data = dat
+)
+</code></pre>
+<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-9-1.png" alt=""  />
+</p>
+<p>从箱线图和点线图中均可以发现不同的物种表现出相似的变异。</p>
+<p>或者可以使用Levene’s或Bartlett’s test来检验方差齐性。Levene’s
+test对偏离正态分布的敏感性要低于Bartlett’s test。</p>
+<p>这两个检验的原假设和备择假设是：</p>
+<ul>
+<li>
+<p><em>方<strong>差</strong>相**等</em></p>
+</li>
+<li>
+<p><em>至<strong>少</strong>有<strong>一</strong>个<strong>方</strong>差<strong>是</strong>不<strong>同</strong>的</em></p>
+</li>
+</ul>
+<p>在R中可以通过<code>car</code>包中的<code>leveneTest()</code>函数执行Levene’s test：</p>
+<pre><code># Levene's test
+library(car)
+
+leveneTest(flipper_length_mm ~ species,
+  data = dat
+)
+
+## Levene's Test for Homogeneity of Variance (center = median)
+##        Df F value Pr(&gt;F)
+## group   2  0.3306 0.7188
+##       339
+</code></pre>
+<p>结果发现<em>p</em>＞0.05，所以不能排除物种间方差相等的假设(<em>p</em>=0.719)，因此数据符合方差齐性。</p>
+<p><strong>检验正态性和方差齐性的另一种方法</strong></p>
+<p>可以通过<code>plot()</code>函数同时检验方差齐性和残差正态性</p>
+<pre><code>par(mfrow = c(1, 2)) # combine plots
+
+# 1. Homogeneity of variances
+plot(res_aov, which = 3)
+
+# 2. Normality
+plot(res_aov, which = 2)
+</code></pre>
+<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-11-1.png" alt=""  />
+</p>
+<p>左边的图表显示，残差与拟合值(每组的平均值)之间没有明显的关系，表明各组方差相等。如果方差不同，则红线就不会是水平的。</p>
+<p>右边的图表显示，残差基本上遵循正态分布。如果参数不符合正态性，则点将始终偏离虚线。</p>
+<h2 id="异常值">异常值</h2>
+<p><strong>异常值</strong>是一个远离其他观测值的值。不同组别间应没有明显的异常值，否则方差分析的结论可能有缺陷。</p>
+<p>通常使用箱线图来直观的对异常值进行处理：</p>
+<pre><code>boxplot(flipper_length_mm ~ species,
+  data = dat
+)
+</code></pre>
+<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-12-1.png" alt=""  />
+</p>
+<p>根据四分位数的定义，<code>Adelie</code>组中有一个异常值，然而该点并不被视为一个重要的异常值，因此可以假设数据没有重要的异常值。</p>
+<h2 id="假设前提小结">假设前提小结</h2>
 <p>为了处理基本假设的这些问题，可以选择：</p>
 <ul>
 <li>
@@ -381,176 +475,18 @@ test不要求数据符合正态分布以及方差齐性。</p>
 </ul>
 </li>
 </ul>
-<h2 id="变量类型">变量类型</h2>
-<p>因变量<code>flipper_length_mm</code>是一个定量变量，而自变量<code>species</code>是一个定性物种（三个水平对应三个物种），所以我们混合了两种类型的变量，并满足了该假设。</p>
-<h2 id="独立性">独立性</h2>
-<p>由于数据是从随机选择的种群中收集的，因此假定观测结果是独立的，且三个样本组合和组间的测量结果是不相关的。</p>
-<p>独立性假设通常是在实验设计和对实验条件的良好控制的基础上得到验证的，这里就是这种情况。</p>
-<p>也可以通过Durbin-Watson
-test（<code>durbinWatsonTest(res_lm)</code>，<code>res_lm</code>是线性模型）来检验数据是否符合独立性。这个检验的零假设是指定一个自相关系数=0，而备择假设指定一个自相关系数≠0。</p>
-<h2 id="正态性">正态性</h2>
-<p>由于每个物种的最小样本量是68，因此不需要检验正态性，通常会直接检验方差齐性。</p>
-<p>残差的正态性可以通过直方图和Q-Q图来检验，也可以通过Shapiro-Wilk test。</p>
-<p>在检验正态性之前，需要先计算ANOVA，并将结果保存在<code>res_aov</code>中：</p>
-<pre><code>res_aov &lt;- aov(flipper_length_mm ~ species,
-  data = dat
-)
-</code></pre>
-<p>然后可以通过直方图或Q-Q图直观的进行检验：</p>
-<pre><code>par(mfrow = c(1, 2)) # combine plots
-
-# histogram
-hist(res_aov$residuals)
-
-# QQ-plot
-library(car)
-
-## 载入需要的程辑包：carData
-
-## 
-## 载入程辑包：'car'
-
-## The following object is masked from 'package:dplyr':
-## 
-##     recode
-
-## The following object is masked from 'package:purrr':
-## 
-##     some
-
-qqPlot(res_aov$residuals,
-  id = FALSE # id = FALSE to remove point identification
-)
-</code></pre>
-<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-6-1.png" alt=""  />
-</p>
-<p>通过上面的直方图和Q-Q图，我们已经可以看到数据符合正态性。直方图大致形成一条钟形曲线，表明残差遵循正态分布。Q-Q图中的点大致沿着直线走，而且大多数都在置信区间内，这也表明残差近似遵循正态分布。</p>
-<p>一些研究人员在这里停下来，而其他人也通过正式的正态性检验来检验这一假设。您可以选择(i)只进行视觉测试，(ii)只通过正常性测试，或者(iii)既进行视觉测试又进行正常性测试。然而，请记住以下两点:</p>
-<ol>
-<li>
-<p>方差分析的鲁棒性很小，偏离正态分布。这意味着，如果有少量的点稍微偏离正态分布，就不是一个问题(从方差分析结果的解释角度来看)；</p>
-</li>
-<li>
-<p>正态性检验有时相当保守，正态性的零假设可能会因为有限的偏离正态性而被拒绝。特别是对于大样本的情况，随着样本量的增加，测试的功率也随之增加。</p>
-</li>
-</ol>
-<p>现在还通过正态性检验来检验正态性假设，可以使用Shapiro-Wilk
-test或Kolmogorov-Smirnov test等。</p>
-<ul>
-<li>
-<p><em>H</em><!-- raw HTML omitted -->0<!-- raw HTML omitted --> : <em>数<strong>据</strong>来<strong>自</strong>正<strong>态</strong>分**布</em></p>
-</li>
-<li>
-<p><em>H</em><!-- raw HTML omitted -->1<!-- raw HTML omitted --> : <em>数<strong>据</strong>不<strong>是</strong>来<strong>自</strong>正<strong>态</strong>分**布</em></p>
-</li>
-</ul>
-<!-- raw HTML omitted -->
-<pre><code>shapiro.test(res_aov$residuals)
-
-## 
-##  Shapiro-Wilk normality test
-## 
-## data:  res_aov$residuals
-## W = 0.99452, p-value = 0.2609
-</code></pre>
-<p>Shapiro-Wilk test
-的P值大于一般的显著性水平（α=5%），因此接受零假设，即数据来自正态分布。</p>
-<p>正态性假设也可以在“原始”数据(即观察数据)而不是残差上进行检验。但是如果在原始数据上检验正态性假设，则必须分别对每个组进行测试，因为方差分析要求每个组具有正态性。</p>
-<p>对所有残差或每组的观察结果进行正态性检验是相等的，并将得到类似的结果。实际上“Y在每个群体中的分布是正态分布的”就等同于说“残差是正态分布的”。残差是Y的实际值与特定值x的Y的平均值之间的距离，因此在计算残差时会引入分组变量。</p>
-<p>所以在ANOVA中实际上有两个检验正态性的选择：</p>
-<ul>
-<li>
-<p>分别检验每组“原始”数据(Y值)的正态性</p>
-</li>
-<li>
-<p>检验所有残差的正态性(但不是每组)</p>
-</li>
-</ul>
-<p>在实践中，你会发现使用残差并一起检验它们通常更容易，特别是如果你有很多组或者每组只有很少的观察结果。</p>
-<p>ANOVA是线性模型的一个特例。假设自变量是一个连续变量(而不是分类变量)，唯一剩下的选择就是检验残差的正态性，这正是在线性回归模型中检验正态性的方法。</p>
-<h2 id="方差齐性">方差齐性</h2>
-<p>假设残差符合正态分布，接下来检验数据方差是否符合齐性。</p>
-<p>可以通过箱线图或点线图来进行检验：</p>
-<pre><code># Boxplot
-boxplot(flipper_length_mm ~ species,
-  data = dat
-)
-</code></pre>
-<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-8-1.png" alt=""  />
-</p>
-<pre><code># Dotplot
-library(&quot;lattice&quot;)
-
-dotplot(flipper_length_mm ~ species,
-  data = dat
-)
-</code></pre>
-<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-9-1.png" alt=""  />
-</p>
-<p>从箱线图和点线图中均可以发现不同的物种表现出相似的变异。</p>
-<p>与正态假设一样，可以正式地用 Levene’s或Bartlett’s
-test来检验方差的相等性。Levene’s
-test对偏离正态分布的敏感性要低于Bartlett’s test。</p>
-<p>这两个检验的零假设和备择假设是：</p>
-<ul>
-<li>
-<p><em>方<strong>差</strong>相**等</em></p>
-</li>
-<li>
-<p><em>至<strong>少</strong>有<strong>一</strong>个<strong>方</strong>差<strong>是</strong>不<strong>同</strong>的</em></p>
-</li>
-</ul>
-<p>在R中可以通过<code>car</code>包中的<code>leveneTest()</code>函数执行Levene’s test。</p>
-<pre><code># Levene's test
-library(car)
-
-leveneTest(flipper_length_mm ~ species,
-  data = dat
-)
-
-## Levene's Test for Homogeneity of Variance (center = median)
-##        Df F value Pr(&gt;F)
-## group   2  0.3306 0.7188
-##       339
-</code></pre>
-<p>结果发现p-value＞0.05的显著性水平，所以不能排除物种间方差相等的假设(p-value
-= 0.719)，因此数据符合方差齐性。</p>
-<h2 id="检验正态性和方差齐性的另一种方法">检验正态性和方差齐性的另一种方法</h2>
-<p>可以通过<code>plot()</code>函数同时检验方差齐性和残差的正态性</p>
-<pre><code>par(mfrow = c(1, 2)) # combine plots
-
-# 1. Homogeneity of variances
-plot(res_aov, which = 3)
-
-# 2. Normality
-plot(res_aov, which = 2)
-</code></pre>
-<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-11-1.png" alt=""  />
-</p>
-<p>左边的图表显示，残差与拟合值(每组的平均值)之间没有明显的关系，因此假设方差均匀性。如果方差的同质性被破坏，红线就不会是平的(水平的)。</p>
-<p>右边的图表显示，残差基本上遵循正态分布，因此假定为正态分布。如果违反了正态性，则点将始终偏离虚线。</p>
-<h2 id="异常值">异常值</h2>
-<p>通常使用箱线图来直观的对异常值进行处理：</p>
-<pre><code>boxplot(flipper_length_mm ~ species,
-  data = dat
-)
-</code></pre>
-<p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-12-1.png" alt=""  />
-</p>
-<p>根据四分位数的定义，<code>Adelie</code>组中有一个异常值，然而该点并不被视为一个重要的异常值，因此可以假设数据没有重要的异常值。</p>
 <h1 id="anova">ANOVA</h1>
-<p>我们证明了方差分析所有的假设都得到了满足。</p>
-<p>因此我们可以在R中继续实现方差分析，但应做一些初步分析，以至于更好的理解研究问题。</p>
+<p>根据上述内容可以发现数据满足了方差分析所需要满足的假设前提，因此我们可以在R中实现方差分析，但应做一些初步分析，以至于更好的理解研究问题。</p>
 <h2 id="初步分析">初步分析</h2>
-<p>在R中实际执行ANOVA之前，一个好的做法是将与研究问题相关的数据可视化。最好的方法是绘制和比较每个物种的鳍长度的箱形图。</p>
+<p>在R中实际执行ANOVA之前，将与研究问题相关的数据可视化是一个较好的方法：</p>
 <pre><code>boxplot(flipper_length_mm ~ species,
   data = dat
 )
 </code></pre>
 <p><img loading="lazy" src="ANOVA_files/figure-markdown_strict/unnamed-chunk-13-1.png" alt=""  />
 </p>
-<p>通过箱型图发现Gentoo的企鹅似乎有最大的鳍，而Adelie的企鹅似乎有最小的鳍。</p>
-<p>除了每个物种的箱线图外，计算一些描述统计学(例如按物种分列的平均值和标准差)也是一个不错的做法。</p>
+<p>通过箱型图发现Gentoo的鳍长最大，而Adelie的鳍长则最小。</p>
+<p>除了每个物种的箱线图外，计算一些描述统计学（例如按物种分列的平均值和标准差）也是一个不错的做法。</p>
 <pre><code>library(dplyr)
 
 group_by(dat, species) %&gt;%
@@ -566,7 +502,7 @@ group_by(dat, species) %&gt;%
 ## 2 Chinstrap  196.  7.13
 ## 3 Gentoo     217.  6.48
 </code></pre>
-<p>平均值也是Adelie最低，Gentoo最高。然而箱形图和描述统计学图并不足以得出<strong>鳍状肢在三个种群的企鹅中存在显著差异</strong>的结论。</p>
+<p>鳍长的平均值也是Adelie最小，Gentoo最大。然而箱形图和描述统计学数据并不足以得出<strong>鳍长在三个种群的企鹅中存在显著差异</strong>的结论，需要进一步进行方差分析来探讨这个问题：</p>
 <h2 id="r中的方差分析">R中的方差分析</h2>
 <p>R中的方差分析可以用几种方法进行，其中两种方法如下:</p>
 <ol>
@@ -603,11 +539,10 @@ summary(res_aov)
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 因为不存在，2个观察量被删除了
 </code></pre>
-<p>从上面的两个输出可以看出，两个方法的检验统计量(第一个方法中的 F =
-，第二个方法中的 F 值)和 p 值(第一个方法中的 p 值和第二个方法中的 Pr (&gt;
-F))是完全相同的，在方差相等的情况下，结果将保持不变。</p>
-<p>第一种方法的优点是很容易从ANOVA（当方差相等时使用）切换到Welch
-ANOVA（当方差不等时使用）。这可以通过将<code>var.equals = TRUE</code>替换为<code>var.equals = FALSE</code>来实现，如下所示:</p>
+<p>从上述的两个输出结果可以看出两个方法的检验统计量（第一个方法中的F=，第二个方法中的F值）和p值（第一个方法中的p值和第二个方法中的Pr（&gt;F））是完全相同的。因此在方差相等的情况下，结果将保持不变。</p>
+<p><strong>第一种方法的优点：</strong></p>
+<p>从ANOVA（当方差相等时使用）切换到Welch
+ANOVA（当方差不等时使用）比较简单方便，可以将<code>var.equals = TRUE</code>替换为<code>var.equals = FALSE</code>来实现，如下所示:</p>
 <pre><code>oneway.test(flipper_length_mm ~ species,
   data = dat,
   var.equal = FALSE # assuming unequal variances
@@ -619,29 +554,35 @@ ANOVA（当方差不等时使用）。这可以通过将<code>var.equals = TRUE<
 ## data:  flipper_length_mm and species
 ## F = 614.01, num df = 2.00, denom df = 172.76, p-value &lt; 2.2e-16
 </code></pre>
-<p>第二种方法的优点为：</p>
+<p><strong>第二种方法的优点：</strong></p>
 <ul>
 <li>
-<p>展示完整的方差分析表，</p>
+<p>展示完整的方差分析表；</p>
 </li>
 <li>
-<p>ANOVA的结果（<code>res_aov</code>）可以保存使用，尤其是事后检验。</p>
+<p>ANOVA的结果（<code>res_aov</code>）可以保存使用，便于进行后续分析。</p>
 </li>
 </ul>
 <h2 id="方差分析结果的解释">方差分析结果的解释</h2>
-<p>假设p值小于0.05，我们拒绝零假设，因此我们拒绝所有平均值相等的假设。所以我们可以得出结论，至少有一个物种的鳍长度不同于其他物种的鳍的长度(p&lt;2.2e-16)。</p>
-<p>在R中报告ANOVA结果的一种简单易行的方法是使用<code>report</code>包中的<code>report()</code>函数:</p>
+<p>根据上述结果我们发现p值小于0.05，因此我们拒绝所有平均值相等的假设，所以我们可以得出结论：<strong>至少有一个物种的鳍长不同于其他物种的鳍长</strong>。</p>
+<p>在R中报告ANOVA结果的可以使用<code>report</code>包中的<code>report()</code>函数:</p>
 <pre><code># install.packages(&quot;remotes&quot;)
 # remotes::install_github(&quot;easystats/report&quot;) # You only need to do that once
-# library(report) # Load the package every time you start R
+library(report) # Load the package every time you start R
 
-# report(res_aov)
+report(res_aov)
+
+## The ANOVA (formula: flipper_length_mm ~ species) suggests that:
+## 
+##   - The main effect of species is statistically significant and large (F(2, 339)
+## = 594.80, p &lt; .001; Eta2 = 0.78, 95% CI [0.75, 1.00])
+## 
+## Effect sizes were labelled following Field's (2013) recommendations.
 </code></pre>
-<p>运行该函数将直接解释结果，指出物种对鳍长度具有显著影响。</p>
 <p><code>report()</code>函数也可以用于其他分析。</p>
 <h1 id="事后检验">事后检验</h1>
 <h2 id="多重检验问题">多重检验问题</h2>
-<p>为了看出哪些组别与其他组别不同，我们需要所有组进行两两比较。由于有三个物种，我们将按以下方式进行比较：</p>
+<p>为了研究所有组别两两之间是否具有差异，我们需要对所有组进行两两比较。由于有三个物种，我们将按以下方式进行比较：</p>
 <ul>
 <li>
 <p>Chinstrap versus Adelie</p>
@@ -653,7 +594,7 @@ ANOVA（当方差不等时使用）。这可以通过将<code>var.equals = TRUE<
 <p>Gentoo vs. Chinstrap</p>
 </li>
 </ul>
-<p>因为我们需要比较两组，理论上可以通过3个t-test来比较物种，在这种情况下t-test也是比较精确的。</p>
+<p>因为我们是比较两组，理论上可以通过3个t-test来进行比较，在这种情况下t-test也是比较精确的。</p>
 <p>然而如果执行多个t-test，就会出现多个检验（也称为多重性）的问题。简而言之，当执行多个统计检验时，有些检验的p值将偶然小于α，即使所有的无效假设实际上都是正确的。</p>
 <p>为了证明这个问题，考虑我们的例子，我们有3个假设要检验，并且期望的显著性水平为0.05。</p>
 <p>由于机会而观察到至少一个重要结果(至少一个p&lt;0.05)的概率是:</p>
@@ -918,9 +859,6 @@ for (i in y) {
   </div>
 
   <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="/tags/stat/">stat</a></li>
-    </ul>
   </footer>
 </article>
     </main>
