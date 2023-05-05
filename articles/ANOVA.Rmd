@@ -1,5 +1,5 @@
 ---
-title: "ANOVA"
+title: "在R中实现one-way ANOVA分析"
 author: "shuzihao"
 date: "2023/4/24"
 output: md_document
@@ -55,7 +55,7 @@ ggplot(dat) +
 ```
 
 
-# 方差分析的目的
+# 目的
 
 方差分析用于研究分析定性数据（X）与定量数据（Y）之间的差异。
 
@@ -71,7 +71,7 @@ ggplot(dat) +
 
 在这个基础上如果原假设被拒绝，那么表明至少有一个均值不同于其他两个均值，但不一定三个均值均不相同。这可能是Adelie的鳍长不同于Chinstrap和Gentoo的鳍长，而Chinstrap和Gentoo的鳍长则是相同的，可以通过事后检验来具体分析三个物种鳍长之间的差异。
 
-# 方差分析的基本假设
+# 基本假设
 
 统计检验的执行需要满足假设前提，当一个或几个假设不能满足时，在技术上可以执行统计检验，但解释结果并相信结论是不正确的。
 
@@ -239,7 +239,7 @@ boxplot(flipper_length_mm ~ species,
 
 根据四分位数的定义，`Adelie`组中有一个异常值，然而该点并不被视为一个重要的异常值，因此可以假设数据没有重要的异常值。
 
-## 假设前提小结
+## 小结
 
 为了处理基本假设的这些问题，可以选择：
 
@@ -274,7 +274,7 @@ boxplot(flipper_length_mm ~ species,
     - 如果不符合方差齐性，则使用Welch ANOVA。
     
 
-# ANOVA
+# one-way ANOVA
 
 根据上述内容可以发现数据满足了方差分析所需要满足的假设前提，因此我们可以在R中实现方差分析，但应做一些初步分析，以至于更好的理解研究问题。
 
@@ -304,7 +304,7 @@ group_by(dat, species) %>%
 
 鳍长的平均值也是Adelie最小，Gentoo最大。然而箱形图和描述统计学数据并不足以得出**鳍长在三个种群的企鹅中存在显著差异**的结论，需要进一步进行方差分析来探讨这个问题：
 
-## R中的方差分析
+## 在R中进行方差分析
 
 R中的方差分析可以用几种方法进行，其中两种方法如下:
 
@@ -376,23 +376,11 @@ report(res_aov)
 
 - Gentoo vs. Chinstrap
 
-因为我们是比较两组，理论上可以通过3个t-test来进行比较，在这种情况下t-test也是比较精确的。
-
-然而如果执行多个t-test，就会出现多个检验（也称为多重性）的问题。简而言之，当执行多个统计检验时，有些检验的p值将偶然小于α，即使所有的无效假设实际上都是正确的。
-
-为了证明这个问题，考虑我们的例子，我们有3个假设要检验，并且期望的显著性水平为0.05。
-
-由于机会而观察到至少一个重要结果(至少一个p<0.05)的概率是:
-
-$$P(at least 1 sig. result) = 1−P(no sig. results)=1−(1−0.05)^{3} = 0.142625$$
-
-所以，考虑到只有3个检验，我们已经有14.26%的机会观察到至少一个重要的结果，即使所有的测试实际上并不重要。并且随着组数的增加，比较的数量也增加，因此仅仅由于而产生显著结果的概率不断增加。
-
-例如，对于10个组，我们需要进行45次比较，至少有一个显著结果的概率随机变为$1-(1-0.05)^{45} = 90%$。因此，当比较10组时，很有可能只是偶然地观察到一个显著的结果，当我们有14组或更多时，我们几乎可以肯定(99%)有一个假阳性！
+因为我们是比较两组，理论上可以通过3个t-test来进行比较，在这种情况下t-test也是比较精确的；然而如果比较所有的组别，进行多次t-test会增加其中出现一个显著结果的概率。
 
 事后检验考虑到多个测试已经完成，并通过调整α来处理问题，这样至少观察到一个重要结果的概率仍然低于我们所期望的重要性水平。
 
-## R中的事后检验及解释
+## 在R中进行事后检验及解释结果
 
 几种最常见的事后检验如下:
 
@@ -400,17 +388,19 @@ $$P(at least 1 sig. result) = 1−P(no sig. results)=1−(1−0.05)^{3} = 0.1426
 
 - Dunnett，用于与参照组进行比较。例如，考虑2个治疗组和一个对照组。如果你只想比较两个治疗组相对于对照组，并且你不想比较两个治疗组相互之间，Dunnett test是首选的。
 
-- Bonferroni correction，只需要用比较的数量除以所需的全局α水平。在我们的例子中，我们有3个比较，所以如果我们想保持一个全局α= 0.05，将得到α’ = 0.05/3 = 0.0167 。然后，我们可以简单地对每个比较执行一个t-test，并将P值同新的α’进行比较。
+- Bonferroni correction，只需要用比较的数量除以所需的全局α水平。在我们的例子中，我们有3个比较，所以如果我们想保持一个全局α= 0.05，将得到α’ = 0.05/3 = 0.0167 。然后我们可以简单地对每个比较执行一个t-test，并将P值同新的α’进行比较。
 
 假设所有三种方法的方差都是相等的（除非使用Welch’s t-test而不是Student’s t-test with the Bonferroni correction）。如果方差不相等，可以使用Games-Howell test等。
 
-## Tukey HSD test
+### Tukey HSD test
 
 在我们的例子中，由于没有“参考”物种，并且我们有兴趣比较所有物种，我们将使用Tukey HSD test。
 
-```{r warning=FALSE}
+```{r warning=FALSE,include=FALSE}
 library(multcomp)
+```
 
+``````{r warning=FALSE}
 # Tukey HSD test:
 post_test <- glht(res_aov,
   linfct = mcp(species = "Tukey")
@@ -452,19 +442,15 @@ plot(TukeyHSD(res_aov))
 ```
 
 
-## Dunnett’s test
+### Dunnett’s test
 
-我们已经在本节中看到，随着组数量的增加，比较的数量也会增加。随着比较数量的增加，事后比较必须进一步降低个体显著性水平，这导致统计能力下降（因此，人口中群体平均值之间的差异不太可能被发现）。
+将所有可能的组与Tukey HSD test进行比较是一种常见的方法，但许多研究都有一个对照组和几个处理组。对于这些研究可能只需要比较对照组和处理组，这样就减少了比较的次数。
 
-减轻这种情况并提高统计能力的一种方法是减少比较的次数。这种减少允许事后过程使用较大的单个错误率来实现所需的全局错误率。
+Dunnett’s test将处理组同对照组进行比较，而不是将所有组彼此进行比较。
 
-虽然将所有可能的组与 Tukey HSD 测试进行比较是一种常见的方法，但许多研究都有一个对照组和几个治疗组。对于这些研究，你可能只需要比较治疗组和对照组，这样就减少了比较的次数。
+现在以Adelie作为对照物种，只比较对照物种和其他两个物种：
 
-Dunnett’s test恰恰就是这样做的ーー它只是比较作为参考的一个组与所有其他组，但并不是将所有组彼此进行比较。
-
-现在，再次为了说明，考虑阿德利企鹅是参考物种，我们只对比较参考物种和其他两个物种感兴趣。在那种情况下，我们会使用 Dunnett 测试。
-
-Dunnett’s test与Tukey HSD test代码的唯一区别在于`linfct = mcp(species = "Dunnett")`:
+Dunnett’s test与Tukey HSD test的区别在于`linfct = mcp(species = "Dunnett")`:
 
 ```{r warning=FALSE}
 library(multcomp)
@@ -477,14 +463,14 @@ post_test <- glht(res_aov,
 summary(post_test)
 ```
 
-事后检验的结果同样可以勇`plot()`函数展示：
+事后检验的结果同样可以用`plot()`函数展示：
 
 ```{r warning=FALSE}
 par(mar = c(3, 8, 3, 3))
 plot(post_test)
 ```
 
-默认情况下，因子变量的引用类别是字母顺序中的第一个类别。这就是为什么在默认情况下，参考物种是 Adelie。引用类别可以通过`relevel ()`函数（或通过`{questionr} addin`）更改。考虑到我们希望把 Gentoo 而不是 Adelie 作为参考范畴:
+默认情况下，因子变量的引用类别是字母顺序中的第一个类别。这就是为什么在默认情况下，参考物种是 Adelie。引用类别可以通过`relevel ()`函数（或通过`{questionr} addin`）更改。现在我们希望以Gentoo作为对照物种，而不是以Adelie作为对照：
 
 ```{r warning=FALSE}
 # Change reference category:
@@ -494,16 +480,16 @@ dat$species <- relevel(dat$species, ref = "Gentoo")
 levels(dat$species)
 ```
 
-Gentoo 现时是第一个类别，实际上被视为参考水平。
+Gentoo现在是实际上被作为对照物种的类别：
 
-为了使用新的参考进行 Dunnett 测试，我们首先需要重新运行 ANOVA，以考虑新的参考:
+为了使用新的参考进行Dunnett’s test，我们首先需要重新运 ANOVA，以考虑新的参考:
 ```{r warning=FALSE}
 res_aov2 <- aov(flipper_length_mm ~ species,
   data = dat
 )
 ```
 
-然后我们可以用方差分析的新结果进行 Dunett 测试:
+然后我们可以用方差分析的新结果进行Dunnett’s test:
 ```{r warning=FALSE}
 # Dunnett's test:
 post_test <- glht(res_aov2,
@@ -518,9 +504,9 @@ par(mar = c(3, 8, 3, 3))
 plot(post_test)
 ```
 
-# 对方差分析和时候检验同时进行可视化
+# 可视化
 
-如果您有兴趣在相同的图上(直接在箱形图上)包含 ANOVA 和事后测试的结果，这里有两段代码可能是您感兴趣的。
+以下是两段对方差分析及事后检验进行可视化的代码
 
 ```{r warning=FALSE}
 # Edit from here
@@ -558,18 +544,18 @@ for (i in y) {
 第二个方法来自`{ggstatsplot}`包:
 
 ```{r warning=FALSE}
-# library(ggstatsplot)
+library(ggstatsplot)
 
-# ggbetweenstats(
-#  data = dat,
-#  x = species,
-#  y = flipper_length_mm,
-#  type = "parametric", # ANOVA or Kruskal-Wallis
-#  var.equal = TRUE, # ANOVA or Welch ANOVA
-#  plot.type = "box",
-#  pairwise.comparisons = TRUE,
-#  pairwise.display = "significant",
-#  centrality.plotting = FALSE,
-#  bf.message = FALSE
-#)
+ggbetweenstats(
+  data = dat,
+  x = species,
+  y = flipper_length_mm,
+  type = "parametric", # ANOVA or Kruskal-Wallis
+  var.equal = TRUE, # ANOVA or Welch ANOVA
+  plot.type = "box",
+  pairwise.comparisons = TRUE,
+  pairwise.display = "significant",
+  centrality.plotting = FALSE,
+  bf.message = FALSE
+)
 ```

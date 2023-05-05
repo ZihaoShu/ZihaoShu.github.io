@@ -2,19 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>/tags/anova/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/articles/</loc>
-    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/</loc>
-    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/r/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/stat/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/articles/anova/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/categories/</loc>
     <lastmod>2021-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/categories/r/</loc>
-    <lastmod>2021-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/tags/</loc>
     <lastmod>2021-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/tax4fun2/</loc>
@@ -25,8 +37,6 @@
   </url><url>
     <loc>/tags/%E5%9F%BA%E5%9B%A0%E6%B3%A8%E9%87%8A/</loc>
     <lastmod>2021-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/articles/anova/</loc>
   </url><url>
     <loc>/contact/</loc>
   </url><url>
